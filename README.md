@@ -23,5 +23,27 @@ firewall-cmd --zone=public --add-port=80/tcp --add-port=8888/tcp --permanent
 firewall-cmd --reload
 
 # Test connection and connect with cqlsh
-nodetool status
+nodetool status <br>
 cqlsh
+
+# Finally we create a keyspace with single-node replication. If we had set up with multiple nodes, we could specify how many nodes we wanted to replicate data onto.
+echo "CREATE KEYSPACE streamdemoapi WITH \
+replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};" | cqlsh
+
+
+echo "use appdemo; create table messages (
+id UUID,
+user_id UUID,
+Message text,
+PRIMARY KEY(id)
+);" | cqlsh
+
+echo "use appdemo; CREATE TABLE users (
+id UUID,
+firstname text,
+lastname text,
+age int,
+email text,
+city text,
+PRIMARY KEY (id)
+);" | cqlsh
