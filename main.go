@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/rabem00/app-cassandra/Cassandra"
+	"github.com/rabem00/app-cassandra/Messages"
 	"github.com/rabem00/app-cassandra/Users"
 
 	"github.com/gorilla/mux"

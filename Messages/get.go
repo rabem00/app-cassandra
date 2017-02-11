@@ -19,43 +19,21 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	var messageList []Message
 	var enrichedMessages []Message
 	var userList []gocql.UUID
-	var err error
+	//var err error
 	m := map[string]interface{}{}
 
-	globalMessages, err := Stream.Client.FlatFeed("messages", "global")
-	// fetch from Stream
-	if err == nil {
-		activities, err := globalMessages.Activities(nil)
-		if err == nil {
-			fmt.Println("Fetching activities from Stream")
-			for _, activity := range activities.Activities {
-				fmt.Println(activity)
-				userID, _ := gocql.ParseUUID(activity.Actor.Value())
-				messageID, _ := gocql.ParseUUID(activity.Object.Value())
-				messageList = append(messageList, Message{
-					ID:      messageID,
-					UserID:  userID,
-					Message: activity.MetaData["message"],
-				})
-				userList = append(userList, userID)
-			}
-		}
-	}
-	// if Stream fails, pull from database instead
-	if err != nil {
-		fmt.Println("Fetching activities from Database")
-		query := "SELECT id,user_id,message FROM messages"
-		iterable := Cassandra.Session.Query(query).Iter()
-		for iterable.MapScan(m) {
-			userID := m["userID"].(gocql.UUID)
-			messageList = append(messageList, Message{
-				ID:      m["id"].(gocql.UUID),
-				UserID:  userID,
-				Message: m["message"].(string),
-			})
-			userList = append(userList, userID)
-			m = map[string]interface{}{}
-		}
+	fmt.Println("Fetching activities from Database")
+	query := "SELECT id,user_id,message FROM messages"
+	iterable := Cassandra.Session.Query(query).Iter()
+	for iterable.MapScan(m) {
+		userID := m["userID"].(gocql.UUID)
+		messageList = append(messageList, Message{
+			ID:      m["id"].(gocql.UUID),
+			UserID:  userID,
+			Message: m["message"].(string),
+		})
+		userList = append(userList, userID)
+		m = map[string]interface{}{}
 	}
 
 	names := Users.Enrich(userList)

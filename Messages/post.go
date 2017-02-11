@@ -29,14 +29,11 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	gocqlUUID := gocql.TimeUUID()
 
-	var created bool = false
 	if len(errs) == 0 {
 		if err := Cassandra.Session.Query(`
 		INSERT INTO messages (id, userID, message) VALUES (?, ?, ?)`,
 			gocqlUUID, userID, message).Exec(); err != nil {
 			errs = append(errs, err.Error())
-		} else {
-			created = true
 		}
 	}
 
