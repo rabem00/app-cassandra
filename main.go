@@ -1,10 +1,12 @@
 package main
 
 import (
-	"app-cassandra/Cassandra"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/rabem00/app-cassandra/Cassandra"
+	"github.com/rabem00/app-cassandra/Users"
 
 	"github.com/gorilla/mux"
 )
